@@ -1,0 +1,27 @@
+name: MCP Rooster CI/CD
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build backend
+        run: dotnet build ./src/backend/McpRooster.API/McpRooster.API.csproj
+      - name: Run tests
+        run: dotnet test ./src/backend/McpRooster.Tests/McpRooster.Tests.csproj
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install CDK and deploy
+        run: |
+          npm install -g aws-cdk
+          cd cdk
+          npm install
+          cdk synth
