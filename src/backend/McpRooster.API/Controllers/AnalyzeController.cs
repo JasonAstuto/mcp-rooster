@@ -23,6 +23,10 @@ namespace McpRooster.API.Controllers
         {
             if (string.IsNullOrWhiteSpace(request.LogSnippet))
                 return BadRequest("LogSnippet is required.");
+            if (request.LogSnippet.Length > 2000)
+                return BadRequest("LogSnippet too large — must be under 2000 characters.");
+            if (request.LogSnippet.Split('\n').Length < 7)
+                return BadRequest("Not enough context in log snippet.");
 
             try
             {

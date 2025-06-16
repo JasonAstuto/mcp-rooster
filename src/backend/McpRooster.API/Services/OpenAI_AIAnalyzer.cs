@@ -54,6 +54,7 @@ namespace McpRooster.API.Services
 
         private async Task<string> AnalyzeWithRole(OpenAIAPI api, string input, string systemPrompt)
         {
+            //this is how we tune our model, tunafish!
             var chat = api.Chat.CreateConversation();
             chat.RequestParameters.Temperature = 0.7;
             chat.RequestParameters.MaxTokens = 500;
