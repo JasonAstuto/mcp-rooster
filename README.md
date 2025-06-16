@@ -1,29 +1,63 @@
 # MCP Rooster – The Early Warning System
 
-This is a full-stack AI-powered log analysis system, designed as a technical showcase for DefCon. It runs on ECS Fargate with CDK infrastructure, and includes a React frontend, a .NET backend, and OpenAI integration for log insights.
+MCP Rooster is a full-stack threat analysis and telemetry platform designed to demo advanced AI-assisted cybersecurity workflows — built for DefCon, and built to impress.
 
-Everything in here is built to demonstrate capability: log ingestion, AI-backed analysis, protocol tuning, and real-time alerts.
+This project uses OpenAI to generate **multi-context analysis** from logs, emulating the perspectives of a red team attacker, blue team defender, and a security executive. The goal is to showcase how AI can enrich security tooling with real-time, human-style context.
 
-## What It Does
+> ⚠️ This is a work in progress. Contributions, suggestions, and feedback are welcome.
 
-- Accepts log files through the frontend
-- Sends them to an ASP.NET Core API hosted on ECS Fargate
-- Analyzes logs using OpenAI API and returns feedback
-- Allows tuning of protocol parameters for future analysis
-- Caches previous results
-- Displays alerts (mocked for now) in a live-style feed
-- All infrastructure is provisioned via AWS CDK
+---
 
-## Structure
+## Features
 
-- `src/backend`: C# API with controllers, services, DI, logging, unit tests
-- `src/frontend`: React app using Material UI, routing, theming
-- `cdk`: CDK app for provisioning S3 buckets, ECS Fargate service, Secrets Manager, and logging
+- ⚙️ **Backend (ASP.NET Core)**  
+  - REST API with structured logging (Serilog)
+  - ECS Fargate-deployable with CDK
+  - AI-driven log analysis with red/blue/executive personas
+  - Health checks, file uploads, and cached history
 
-## Requirements
+- 🖥 **Frontend (React + Material UI)**  
+  - Log upload and analysis interface
+  - AI insight cards per persona
+  - Tuning panel for future protocol fuzzing
+  - Alert panel with mock threat activity
 
-- Node 18+
-- .NET 8 SDK
-- AWS CLI configured with appropriate credentials
-- Docker running
-- OpenAI key (stored in AWS Secrets Manager under `McpRoosterOpenAIKey`)
+- ☁️ **Infrastructure (AWS CDK)**  
+  - S3 buckets for input/output
+  - ECS Fargate backend deployment
+  - Static hosting for React frontend
+  - CloudWatch logging + placeholder for AI secret
+
+---
+
+## Red Team / Blue Team / Executive AI
+
+The `/analyze` endpoint leverages OpenAI’s API to generate three independent analyses of a log snippet:
+
+| Perspective | Description |
+|------------|-------------|
+| 🔴 **Red Team** | How would an attacker exploit this? |
+| 🔵 **Blue Team** | What threat is this, and how should we defend? |
+| 🧑‍💼 **Executive** | What's the risk and business impact? |
+
+The frontend displays all three responses side-by-side for easy comparison and situational awareness.
+
+---
+
+## Setup
+
+### Prerequisites
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/download)
+- [Node.js + npm](https://nodejs.org)
+- [AWS CLI + CDK](https://docs.aws.amazon.com/cdk/)
+- OpenAI API Key (create one and store it in Secrets Manager)
+
+---
+
+### Backend
+
+```bash
+cd src/backend/McpRooster.API
+dotnet build
+dotnet run
