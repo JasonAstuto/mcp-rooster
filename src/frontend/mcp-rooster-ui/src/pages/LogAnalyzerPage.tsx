@@ -118,3 +118,4 @@ export const LogAnalyzerPage: React.FC = () => {
         </Container>
     );
 };
+export default LogAnalyzerPage;

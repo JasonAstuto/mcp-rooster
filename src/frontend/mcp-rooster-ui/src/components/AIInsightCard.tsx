@@ -1,39 +1,38 @@
+// src/components/AIInsightCard.tsx
+
 import React from 'react';
-import { Card, CardContent, Typography, CardActions, Button } from '@mui/material';
+import { Card, CardContent, Typography, Tooltip } from '@mui/material';
 
 interface AIInsightCardProps {
-  analysis: string;
-  onRepeat?: () => void;
-  onApply?: () => void;
+  title: 'Red Team' | 'Blue Team' | 'Executive';
+  description: string;
+  content: string;
 }
 
-const AIInsightCard: React.FC<AIInsightCardProps> = ({ analysis, onRepeat, onApply }) => {
-  return (
-    <Card elevation={3} sx={{ mt: 3 }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          AI Analysis Result
-        </Typography>
-        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-          {analysis}
-        </Typography>
-      </CardContent>
-      {(onRepeat || onApply) && (
-        <CardActions>
-          {onApply && (
-            <Button size="small" color="success" onClick={onApply}>
-              Apply Suggestion
-            </Button>
-          )}
-          {onRepeat && (
-            <Button size="small" color="primary" onClick={onRepeat}>
-              Repeat Analysis
-            </Button>
-          )}
-        </CardActions>
-      )}
-    </Card>
-  );
+const getAccentColor = (title: string) => {
+  switch (title) {
+    case 'Red Team':
+      return '#ff1744';
+    case 'Blue Team':
+      return '#2979ff';
+    case 'Executive':
+      return '#f9a825';
+    default:
+      return '#ccc';
+  }
 };
 
-export default AIInsightCard;
+export const AIInsightCard: React.FC<AIInsightCardProps> = ({ title, description, content }) => {
+  return (
+    <Tooltip title={description} placement="top" arrow>
+      <Card variant="outlined" sx={{ borderLeft: `6px solid ${getAccentColor(title)}`, mb: 2 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>{title}</Typography>
+          <Typography variant="body2" color="text.secondary" style={{ whiteSpace: 'pre-line' }}>
+            {content}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Tooltip>
+  );
+};
