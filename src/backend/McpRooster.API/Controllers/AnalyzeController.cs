@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using McpRooster.API.Interfaces;
 using McpRooster.API.Models;
-using Microsoft.Extensions.Logging;
 
 namespace McpRooster.API.Controllers
 {
