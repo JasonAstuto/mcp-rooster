@@ -5,6 +5,7 @@ using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using McpRooster.API.Models;
 
 namespace McpRooster.API.Services
 {
@@ -12,13 +13,14 @@ namespace McpRooster.API.Services
     {
         private readonly OpenAIAPI _api;
         private readonly ILogger<OpenAIAIAnalyzer> _logger;
+        private string? apiKey;
 
         public OpenAIAIAnalyzer(IAmazonSecretsManager secretsManager, ILogger<OpenAIAIAnalyzer> logger)
         {
             _logger = logger;
             var secretValue = GetSecretValue(secretsManager, "OpenAI-API-Key").GetAwaiter().GetResult();
             var json = JsonSerializer.Deserialize<Dictionary<string, string>>(secretValue);
-            var apiKey = json?["ApiKey"];
+            apiKey = json?["ApiKey"];
 
             if (string.IsNullOrWhiteSpace(apiKey))
             {
@@ -44,30 +46,35 @@ namespace McpRooster.API.Services
             }
         }
 
-        public async Task<string> AnalyzeAsync(string logSnippet, string protocolContext)
+        public async Task<McpAnalysisResult> AnalyzeAsync(string logContent)
         {
+            var api = new OpenAIAPI(apiKey);
+            var result = new McpAnalysisResult();
+
+            result.RedTeam = await AnalyzeWithRole(api, logContent, "You are a red team operator. Analyze the logs and identify how you would exploit any weakness.");
+            result.BlueTeam = await AnalyzeWithRole(api, logContent, "You are a blue team analyst. Identify the possible threat and how to respond.");
+            result.Executive = await AnalyzeWithRole(api, logContent, "You are a security executive. Summarize the risk and business impact in clear terms.");
+
+            return result;
+        }
+
+        private async Task<string> AnalyzeWithRole(OpenAIAPI api, string input, string systemPrompt)
+        {
+            var chat = api.Chat.CreateConversation();
+            chat.RequestParameters.Temperature = 0.7;
+            chat.RequestParameters.MaxTokens = 500;
+
+            chat.AppendSystemMessage(systemPrompt);
+            chat.AppendUserInput(input);
+
             try
             {
-                var chatRequest = new ChatRequest
-                {
-                    Model = "gpt-4",
-                    Temperature = 0.2,
-                    MaxTokens = 400,
-                    Messages = new List<ChatMessage>
-                    {
-                        new ChatMessage(ChatMessageRole.System, $"You are a security analyst specializing in {protocolContext} traffic. Help detect anomalies."),
-                        new ChatMessage(ChatMessageRole.User, $"Analyze the following log:\n\n{logSnippet}")
-                    }
-                };
-
-                var chatResult = await _api.Chat.CreateChatCompletionAsync(chatRequest);
-
-                return chatResult.Choices.First().Message.Content.Trim();
+                return await chat.GetResponseFromChatbotAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "OpenAI analysis failed");
-                return "Error: AI analysis failed. Please check logs for details.";
+                return "Error: unable to retrieve AI analysis.";
             }
         }
     }

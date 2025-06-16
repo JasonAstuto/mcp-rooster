@@ -32,7 +32,7 @@ namespace McpRooster.API.Controllers
             try
             {
                 _logger.LogInformation("AI analysis requested for protocol {Protocol}", request.Protocol);
-                var result = await _aiAnalyzer.AnalyzeAsync(request.LogSnippet, request.Protocol);
+                var result = await _aiAnalyzer.AnalyzeAsync(request.LogSnippet);
                 return Ok(new
                 {
                     protocol = request.Protocol,

@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using McpRooster.API.Models;
+using OpenAI_API;
 
 namespace McpRooster.API.Interfaces
 {
@@ -13,6 +15,7 @@ namespace McpRooster.API.Interfaces
         /// <param name="logSnippet">The raw log string to analyze.</param>
         /// <param name="protocolContext">The context or protocol type (e.g., HTTP, HTTPS, TLS) to guide the AI.</param>
         /// <returns>A human-readable string with the AI-generated analysis or insight.</returns>
-        Task<string> AnalyzeAsync(string logSnippet, string protocolContext);
+        Task<McpAnalysisResult> AnalyzeAsync(string logContent);
+        
     }
 }
