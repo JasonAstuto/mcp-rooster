@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using McpRooster.API.Interfaces;
+using McpRooster.API.Models;
 using Microsoft.Extensions.Logging;
 
 namespace McpRooster.API.Controllers
@@ -17,14 +18,8 @@ namespace McpRooster.API.Controllers
             _logger = logger;
         }
 
-        public class AnalyzeRequest
-        {
-            public string Protocol { get; set; } = "HTTP";
-            public string LogSnippet { get; set; } = string.Empty;
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AnalyzeRequest request)
+        public async Task<IActionResult> Post([FromBody] AnalysisRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.LogSnippet))
                 return BadRequest("LogSnippet is required.");
@@ -32,12 +27,15 @@ namespace McpRooster.API.Controllers
             try
             {
                 _logger.LogInformation("AI analysis requested for protocol {Protocol}", request.Protocol);
-                var result = await _aiAnalyzer.AnalyzeAsync(request.LogSnippet);
+                AnalysisResult result = await _aiAnalyzer.AnalyzeAsync(request.LogSnippet);
+
                 return Ok(new
                 {
                     protocol = request.Protocol,
                     input = request.LogSnippet,
-                    analysis = result
+                    redTeam = result.RedTeam,
+                    blueTeam = result.BlueTeam,
+                    executive = result.Executive
                 });
             }
             catch (Exception ex)

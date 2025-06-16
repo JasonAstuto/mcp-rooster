@@ -25,8 +25,9 @@ builder.Services.AddDefaultAWSOptions(new AWSOptions
 builder.Services.AddAWSService<IAmazonSecretsManager>();
 
 // ---------- Services & DI ----------
-builder.Services.AddScoped<IAIAnalyzer, OpenAIAIAnalyzer>();
+builder.Services.AddScoped<IAIAnalyzer, OpenAI_AIAnalyzer>();
 builder.Services.AddControllers();
+builder.Services.AddHttpClient<IEmbeddingService, EmbeddingService>();
 
 // ---------- CORS (for frontend) ----------
 builder.Services.AddCors(options =>

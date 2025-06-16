@@ -40,9 +40,9 @@ namespace McpRooster.Tests.Services
         {
             // Arrange
             var mockSecretsManager = SetupSecretsManager();
-            var mockLogger = new Mock<ILogger<OpenAIAIAnalyzer>>();
+            var mockLogger = new Mock<ILogger<OpenAI_AIAnalyzer>>();
 
-            var analyzer = new OpenAIAIAnalyzer(mockSecretsManager.Object, mockLogger.Object);
+            var analyzer = new OpenAI_AIAnalyzer(mockSecretsManager.Object, mockLogger.Object);
 
             var result = await analyzer.AnalyzeAsync("GET /admin.php", "HTTP");
 
@@ -64,10 +64,10 @@ namespace McpRooster.Tests.Services
                     SecretString = "{}"
                 });
 
-            var mockLogger = new Mock<ILogger<OpenAIAIAnalyzer>>();
+            var mockLogger = new Mock<ILogger<OpenAI_AIAnalyzer>>();
 
             // Act
-            var ex = Record.Exception(() => new OpenAIAIAnalyzer(brokenSecretsManager.Object, mockLogger.Object));
+            var ex = Record.Exception(() => new OpenAI_AIAnalyzer(brokenSecretsManager.Object, mockLogger.Object));
 
             // Assert
             ex.Should().NotBeNull();
